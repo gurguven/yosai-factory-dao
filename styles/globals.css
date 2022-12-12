@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  --primary-black: #0F0F0F;
+  --secondary-black: #141414;
+  --primary-white: rgb(246, 245, 245);
+  --secondary-gray: #e0e0e0;
+  --primary-green: #82c566; 
+  --secondary-green: #65b444; 
+  --gray: #999;
+  --dark-gray: #777;
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
+  --big-radius: 11px; 
+  --small-radius : calc(var(--big-radius) / 2);
+  --ysfdaocolor: #82c566 ;
+  --ysfprodcolor: #fd9402; ;
+  --ysfspacecolor: #6dc1e5 ;
+  --ysfparkcolor: #e6b32b;
+  
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  max-width: 100vw;
+}
+
+a {
+  color: var(--primary-white);
+  text-decoration: none;
+  font-weight: 900;
+}
+
+
+html {
+  color-scheme: dark;
+}
+body {
+  color: #e7e8e8;
+  background: #0F0F0F;
+}
