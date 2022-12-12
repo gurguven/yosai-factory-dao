@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+/// @title NFT STAKINKG CONTRACT 
+/// @author Güven Gür
+/// @notice Collection d'NFT : Fungitos Collection
+/// @notice Token de rewards : YSF Token
+
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -19,97 +24,114 @@ contract ERC721Staking is ReentrancyGuard {
         rewardsToken = _rewardsToken;
     }
 
+    //::::::::::::/ VARIABLES /:::::::::::://
+
+    // Struct d'un token staké 
     struct StakedToken {
+        // Adresse du staker
         address staker;
+        // Id du token
         uint256 tokenId;
     }
     
     // Staker info
     struct Staker {
-        // Amount of tokens staked by the staker
+        // permet d'enregistrer les NFT stackés dans le SC
         uint256 amountStaked;
 
-        // Staked token ids
+         // Le nombre de NFT stake dans le SC 
         StakedToken[] stakedTokens;
 
-        // Last time of the rewards were calculated for this user
+        // Le dernier moment ou les rewards ont été calculé pour l'user
+        // Permet de reset le temps d'update, à chaque withdraw, ou nft staké en plus
         uint256 timeOfLastUpdate;
 
-        // Calculated, but unclaimed rewards for the User. The rewards are
-        // calculated each time the user writes to the Smart Contract
+        // Combien le SC doit au stacker
+        // Calculé à chaque fois que l'utilisateur écrit dans le SC
         uint256 unclaimedRewards;
     }
 
-    // Rewards per hour per token deposited in wei.
+    // Rewards par heure, par token déposé en wei 
     uint256 private rewardsPerHour = 1388888888888900;
 
+    //::::::::::::/ MAPPING /:::::::::::://
 
-    // Mapping of User Address to Staker info
+    // Mapping d'une address utilisateur à une info de stacker
     mapping(address => Staker) public stakers;
 
-    // Mapping of Token Id to staker. Made for the SC to remember
-    // who to send back the ERC721 Token to.
+    // Mapping d'un token Id à un staker. 
+    // Fait pour que le SC sache à qui renvoyer son NFT 
     mapping(uint256 => address) public stakerAddress;
 
-    
-    event nftClaimed(uint tokenId, uint date, address staker);
-    event nftWithdraw(uint tokenId, address staker);
-    event nftStaked(uint tokenId, address staker, uint amountStaked);
+    //::::::::::::/ FONCTIONS /:::::::::::://
+    //////////
+    // WRITE //
+    //////////
 
-    // If address already has ERC721 Token/s staked, calculate the rewards.
-    // Increment the amountStaked and map msg.sender to the Token Id of the staked
-    // Token to later send back on withdrawal. Finally give timeOfLastUpdate the
-    // value of now.
+
+    // -------- STAKE -------- // 
+
+    /// @notice Permet de staker des NFT 
+    /// @dev Si le compte possède déjà des NFT stakés, calculer les rewards
+    /// @dev Incrémente le nombre de token stakés
+    /// @dev Map du msg.sender au tokenId du NFT staké afin de pouvoir le rendre au withdraw 
+    /// @dev Mise à jour du timeOfLastUpdate à la date du block.timestamp
+    /// @param _tokenId tokenId du NFT à staker 
     function stake(uint256 _tokenId) external nonReentrant {
-        // If wallet has tokens staked, calculate the rewards before adding the new token
+         // Si la wallet a des tokens staked, calculer les rewards avant d'ajouter un nouveau NFT
         if (stakers[msg.sender].amountStaked > 0) {
             uint256 rewards = calculateRewards(msg.sender);
             stakers[msg.sender].unclaimedRewards += rewards;
         }
 
-        // Wallet must own the token they are trying to stake
+        // Check que l'owner du token est bien l'appeleur de la fonction
         require(
             nftCollection.ownerOf(_tokenId) == msg.sender,
             "You don't own this token!"
         );
 
-        // Transfer the token from the wallet to the Smart contract
+        // Transfert le NFT de la wallet du user à ce SC 
         nftCollection.transferFrom(msg.sender, address(this), _tokenId);
 
-        // Create StakedToken
+        // Créé une variable de type StakedToken, avec l'address du staker
+        // et l'ID du token stacké 
         StakedToken memory stakedToken = StakedToken(msg.sender, _tokenId);
 
-        // Add the token to the stakedTokens array
+        // Ajoute le token dans l'array de token stakés 
         stakers[msg.sender].stakedTokens.push(stakedToken);
 
-        // Increment the amount staked for this wallet
+        // Incrémente le montant stacké pour cette wallet 
         stakers[msg.sender].amountStaked++;
 
-        // Update the mapping of the tokenId to the staker's address
+        // Update le mapping d'un token ID à l'address du staker 
         stakerAddress[_tokenId] = msg.sender;
 
-        // Update the timeOfLastUpdate for the staker   
+        // Update le timeOfLastUpdate pour le staker  
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
     }
+
+    // -------- WITHDRAW -------- // 
     
-    // Check if user has any ERC721 Tokens Staked and if they tried to withdraw,
-    // calculate the rewards and store them in the unclaimedRewards
-    // decrement the amountStaked of the user and transfer the ERC721 token back to them
+    /// @notice Permet de récupérer son NFT staké
+    /// @dev Check si le user possède des NFT stakés 
+    /// @dev Décrementer la variable amountStaked 
+    /// @dev Retourner le NFT staké à son staker
+    /// @param _tokenId tokenId du NFT à récupérer 
     function withdraw(uint256 _tokenId) external nonReentrant {
-        // Make sure the user has at least one token staked before withdrawing
+        // Vérification que le user possède au moins un NFT stack 
         require(
             stakers[msg.sender].amountStaked > 0,
             "You have no tokens staked"
         );
         
-        // Wallet must own the token they are trying to withdraw
+        // Le msg sender a besoin de posséder le token qu'il essaie de withdraw 
         require(stakerAddress[_tokenId] == msg.sender, "You don't own this token!");
 
-        // Update the rewards for this user, as the amount of rewards decreases with less tokens.
+        // Mise à jour des rewards pour ce user, le montant de rewards doit baisser vu qu'il y a moins de tokens
         uint256 rewards = calculateRewards(msg.sender);
         stakers[msg.sender].unclaimedRewards += rewards;
 
-        // Find the index of this token id in the stakedTokens array
+        // Trouver l'ID du NFT dans le stakedTokens array 
         uint256 index;
         for (uint256 i = 0; i < stakers[msg.sender].stakedTokens.length; i++) {
             if (
@@ -122,25 +144,25 @@ contract ERC721Staking is ReentrancyGuard {
             }
         }
 
-        // Set this token's .staker to be address 0 to mark it as no longer staked
+        // Retirer le token du stakedTokens array 
         stakers[msg.sender].stakedTokens[index].staker = address(0);
 
-        // Decrement the amount staked for this wallet
+        // Décrémenter le montant de NFT stake de cette address
         stakers[msg.sender].amountStaked--;
 
-        // Update the mapping of the tokenId to the be address(0) to indicate that the token is no longer staked
+        // Update le mapping du tokenId à l'address(0) pour indiquer que le NFT n'est plus stacké 
         stakerAddress[_tokenId] = address(0);
 
-        // Transfer the token back to the withdrawer
+        // Transférer le NFT à son détenteur 
         nftCollection.transferFrom(address(this), msg.sender, _tokenId);
 
-        // Update the timeOfLastUpdate for the withdrawer   
+        // Update le timeOfLastUpdate pour le user
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
     }
 
-    // Calculate rewards for the msg.sender, check if there are any rewards
-    // claim, set unclaimedRewards to 0 and transfer the ERC20 Reward token
-    // to the user.
+    /// @notice Permet de récupérer les tokens que le contrat doit au user
+    /// @dev Calculer les rewards pour le msg.sender, et check si il y'a des rewards
+    /// @dev Transfert des tokens au user
     function claimRewards() external {
         uint256 rewards = calculateRewards(msg.sender) +
             stakers[msg.sender].unclaimedRewards;
@@ -150,25 +172,36 @@ contract ERC721Staking is ReentrancyGuard {
         rewardsToken.safeTransfer(msg.sender, rewards);
     }
 
-
     //////////
     // View //
     //////////
 
+    // -------- AVAILABLE REWARDS -------- // 
+
+
+    /// @notice Permet de savoir les tokens disponibles à la récupération
+    /// @return rewards le nombre de rewards qui peuvent être récupérées 
     function availableRewards(address _staker) public view returns (uint256) {
         uint256 rewards = calculateRewards(_staker) +
             stakers[_staker].unclaimedRewards;
         return rewards;
     }
 
+    // -------- TOKENS STAKES -------- // 
+
+    /// @notice Permet de récupérer tous les NFT qu'un user stake sur le contrat 
+    /// @param _user le user pour lequel on souhaite récupérer les NFT stakés
+    /// @return StakedToken les NFT stakés par le user
     function getStakedTokens(address _user) public view returns (StakedToken[] memory) {
-        // Check if we know this user
+        // Vérifier si on connait cet user 
         if (stakers[_user].amountStaked > 0) {
-            // Return all the tokens in the stakedToken Array for this user that are not -1
+            // Retour toutes les tokens qui sont dans le array stakedToken 
             StakedToken[] memory _stakedTokens = new StakedToken[](stakers[_user].amountStaked);
             uint256 _index;
 
+            // Loop pour avoir les vrais tokens stackés
             for (uint256 j = 0; j < stakers[_user].stakedTokens.length; j++) {
+                // Si le stakedToken n'est pas égal à l'adresse 0
                 if (stakers[_user].stakedTokens[j].staker != (address(0))) {
                     _stakedTokens[_index] = stakers[_user].stakedTokens[j];
                     _index++;
@@ -188,17 +221,22 @@ contract ERC721Staking is ReentrancyGuard {
     // Internal//
     /////////////
 
-    // Calculate rewards for param _staker by calculating the time passed
-    // since last update in hours and mulitplying it to ERC721 Tokens Staked
-    // and rewardsPerHour.
+    // -------- CALCULATE REWARDS  -------- // 
+
+    /// @notice Calcul des rewards 
+    /// @dev Calcule les rewards pour un staker, 
+    /// @dev En fonction du temps passé depuis la dernière update en heures 
+    /// @dev Et le multipliant par le nombre de NFT stakés et les rewards par heure  
     function calculateRewards(address _staker)
         internal
         view
         returns (uint256 _rewards)
     {
         return (((
+            // On détermine le temps entre maintenant et le dernier update
             ((block.timestamp - stakers[_staker].timeOfLastUpdate) *
                 stakers[_staker].amountStaked)
+            // On multiplie par l'amount stake // Puis par les rewards par heure // Divisé par le rapport sec/h
         ) * rewardsPerHour) / 3600);
     }
 }
