@@ -10,6 +10,9 @@ import {MdWhereToVote} from 'react-icons/md'
 const Header = () => {
   return (
       <div>
+        <Head>
+          <title>YSF DAO</title>
+        </Head>
          <header className={styles.header}>
           <div className={styles.logo}>
               <Image src="/logo-ysf.png" alt="Logo YSF" width={135} height={135} /> 
