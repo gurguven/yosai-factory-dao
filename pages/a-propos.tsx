@@ -89,22 +89,22 @@ const APropos = () => {
 
                     <div className={styles.ranks}>
                         <div className={styles.rankLine}>
-                            <div><h3>RANK #03</h3></div>
+                            <div><h3>RANK #04</h3></div>
                             <div><p>Governor</p></div>
                             <div><p><span className={styles.green}>1000 Points</span></p></div>
                         </div>
                         <div className={styles.rankLine}>
-                            <div><h3>RANK #02</h3></div>
+                            <div><h3>RANK #03</h3></div>
                             <div><p>Conquistador</p></div>
                             <div><p><span className={styles.green}>500 Points</span></p></div>
                         </div>
                         <div className={styles.rankLine}>
-                            <div><h3>RANK #01</h3></div>
+                            <div><h3>RANK #02</h3></div>
                             <div><p>Explorer</p></div>
                             <div><p><span className={styles.green}>100 Points</span></p></div>
                         </div>
                         <div className={styles.rankLine}>
-                            <div><h3>RANK #00</h3></div>
+                            <div><h3>RANK #01</h3></div>
                             <div><p>Discoverer</p></div>
                             <div><p><span className={styles.green}>0 Point</span></p></div>
                         </div>
