@@ -41,13 +41,8 @@ const NewProposal = () => {
 
     useEffect(() => {
         if (tokenBalance) {
-            setBalanceLoading(true)
-            setBalance(parseInt(tokenBalance?.displayValue))
-            console.log(parseInt(tokenBalance?.displayValue));
-            console.log(balance);
-            console.log(tokenBalance);
-            
-            
+            setBalanceLoading(true);
+            setBalance(parseInt(tokenBalance?.displayValue);
         }
     }, [address, tokenBalance]);
 
