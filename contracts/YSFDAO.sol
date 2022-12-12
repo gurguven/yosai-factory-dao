@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 /// @title YSF DAO Contract 
 /// @author Güven Gür
-/// @notice Ce contrat possède 1 DAO mère et 3 SubDAO 
+/// @notice La DAO possède 1 DAO mère et 3 SubDAO 
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
