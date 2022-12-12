@@ -19,7 +19,7 @@ const DAOADDRESS = "0xAaEb6F488C81d08317f1bC4B96786C990E6cd9c9"
 const Proposition = () => {
 
     const address = useAddress();
-    const connectWithMetamask = useMetamask();
+    const connectWithMetamask = useMetamask();  
 
     const {contract, isLoading } = useContract(DAOADDRESS);
     const { contract : YSFTOKEN } = useContract(YSFTOKENADDRESS);
@@ -381,11 +381,15 @@ const Proposition = () => {
                                     <div className={styles.voteBloc}>
                                         <Chargement noText={true} />
                                     </div>
-                                ) :  (
+                                ) : !status ? (
                                     <div className={styles.voteBloc}>
                                         <div>
                                             <p>La session de vote pour cette proposition est close</p>
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className={styles.voteBloc}>
+                                        <Chargement noText={true} />
                                     </div>
                                 )
                             }
