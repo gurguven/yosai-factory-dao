@@ -6,6 +6,7 @@ import {BsFillPersonLinesFill} from 'react-icons/bs'
 import {IoMdHelpCircle} from 'react-icons/io'
 import {RiMoneyCnyCircleFill} from 'react-icons/ri'
 import {MdWhereToVote} from 'react-icons/md'
+import Head from 'next/head'
 
 const Header = () => {
   return (
