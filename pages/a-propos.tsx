@@ -55,18 +55,18 @@ const APropos = () => {
                     <div>
                         <h2>Comment débloquer un espace ?</h2>
                         <ul>
-                            <li>Il faut montrer votre implication, votre envie de faire avancer le projet. </li>
-                            <p>Pour se faire, il est nécessaire d{`'`}attendre le début de la deuxième phase : l{`'`}ouverture des SubDAO, et d{`'`}avoir un nombre de vote dépensé suffisant</p>
-                            <li>Des points bonus</li>
+                            <li>Vous êtes la clé de notre réussite :</li>
+                            <p>Votre implication dans la YSF est primordiale pour faire évoluer son organisation et ses installations. Dès la deuxième phase, lors de l{`'`}ouverture des SUB DAO, vous aurez la possibilité de voter et soumettre vos propositions d{`'`}optimisations. Pour cela vous devez disposer d{`'`}un minimum de 120 YSF.</p>
+                            <li>Obtenez des points bonus :</li>
                             <p>
-                                1 vote utilisé = 1 point. <br /> 
-                                Afin de débloquer l{`'`}accès à d{`'`}autres SubDAO plus rapidement, un système de points bonus est instauré. 
+                               Chaque vote et proposition d’évolution vous rapporte 1 point. <br/>
+                                En fonction des points cumulés, votre rôle au sein de la DAO évoluera jusqu{`'`}à obtenir le titre de Governor
                                 <br />
                                 
                             </p>
                             <p>
                                 Chaque proposition gagnante que vous proposerez vous récompensera de <span className={styles.green}>10 points bonus</span> ! Vous pourrez voir l{`'`}évolution de 
-                                ces au sein de votre <a href="/profil">profil</a> ! 
+                                ces points au sein de votre <a href="/profil">profil</a> ! 
                             </p>
                         </ul>
                     </div>
