@@ -201,7 +201,9 @@ contract YSFDAO is Ownable  {
             // Si la proposition a plus de vote positifs que négatifs
             if(ProposalArray[_id].yesVoteCount > ProposalArray[_id].noVoteCount) {
                 // On enregistre qu'elle a gagné
-                ProposalArray[_id].hasWinned = true; 
+                ProposalArray[_id].hasWinned = true;
+                // On rajoute 10 points au sender de la proposition gagnante 
+                voters[ProposalArray[_id].sender].points+= 10; 
             }
         }
         // Require que le voteur n'a pas déjà voté pour cette proposition
@@ -450,5 +452,3 @@ contract YSFDAO is Ownable  {
         } 
     }
 }
-
-
