@@ -191,6 +191,10 @@ header.header .nav {
   transition: all 0.2s linear;
 }
 
+.proposalBlocLeft {
+  max-width: 75%; 
+}
+
 .proposalBlocLeft > p{
   padding-left: 1.5em;
 }
