@@ -19,7 +19,7 @@ const DAOADDRESS = "0xAaEb6F488C81d08317f1bC4B96786C990E6cd9c9"
 const Proposition = () => {
 
     const address = useAddress();
-    const connectWithMetamask = useMetamask();  
+    const connectWithMetamask = useMetamask();
 
     const {contract, isLoading } = useContract(DAOADDRESS);
     const { contract : YSFTOKEN } = useContract(YSFTOKENADDRESS);
@@ -416,7 +416,7 @@ const Proposition = () => {
 
                                     {
                                         callAreLoaded && votesCount != 0 ? (
-                                            <div className={styles.pourcentageBloc}>{(yesVote / votesCount) * 100} %</div>
+                                            <div className={styles.pourcentageBloc}>{(Math.floor((yesVote / votesCount) * 100))} %</div>
                                         ) : (
                                             <div className={styles.pourcentageBloc}>... %</div>
                                         )
@@ -442,7 +442,7 @@ const Proposition = () => {
                                     <div>{noVote} YSF</div>
                                     {
                                         callAreLoaded && votesCount != 0 ? (
-                                            <div className={styles.pourcentageBloc}>{(noVote / votesCount) * 100} %</div>
+                                            <div className={styles.pourcentageBloc}>{(Math.round((noVote / votesCount) * 100))} %</div>
                                         ) : (
                                             <div className={styles.pourcentageBloc}>... %</div>
                                         )
