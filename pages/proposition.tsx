@@ -283,7 +283,7 @@ const Proposition = () => {
                                 </div>
 
                                 {
-                                    eventsArray?.slice(eventsArray.length - 6, eventsArray.length).map((voter:any, index:any) => (
+                                    eventsArray?.map((voter:any, index:any) => (
 
                                         <div 
                                             className={styles.voterLine}
